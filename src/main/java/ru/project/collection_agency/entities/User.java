@@ -21,6 +21,7 @@ public class User
 
     private Gender gender;
 
+    @Convert(converter = PassportInfoAttributeConverter.class)
     private PassportInfo passportInfo;
 
     //@OneToMany(mappedBy = "debtorId", cascade = CascadeType.ALL, orphanRemoval = true)
