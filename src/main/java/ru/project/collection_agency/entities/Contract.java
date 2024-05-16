@@ -1,9 +1,6 @@
 package ru.project.collection_agency.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.util.Date;
 
@@ -15,18 +12,19 @@ public class Contract
     @GeneratedValue
     private Long id;
 
-    private Long debtorId;
+    @ManyToOne
+    private User debtor;
 
-    private Long debtId;
+    private Debt debt;
 
     private Date date;
 
     private String conditions;
 
-    public Contract(Long id, Long debtorId, Long debtId, Date date, String conditions) {
+    public Contract(Long id, User debtor, Debt debt, Date date, String conditions) {
         this.id = id;
-        this.debtorId = debtorId;
-        this.debtId = debtId;
+        this.debtor = debtor;
+        this.debt = debt;
         this.date = date;
         this.conditions = conditions;
     }
@@ -35,20 +33,20 @@ public class Contract
         return id;
     }
 
-    public Long getDebtorId() {
-        return debtorId;
+    public User getDebtor() {
+        return debtor;
     }
 
-    public void setDebtorId(Long debtorId) {
-        this.debtorId = debtorId;
+    public void setDebtorId(User debtor) {
+        this.debtor = debtor;
     }
 
-    public Long getDebtId() {
-        return debtId;
+    public Debt getDebt() {
+        return debt;
     }
 
-    public void setDebtId(Long debtId) {
-        this.debtId = debtId;
+    public void setDebt(Debt debt) {
+        this.debt = debt;
     }
 
     public Date getDate() {

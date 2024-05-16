@@ -27,19 +27,20 @@ public class User
     @OneToMany(mappedBy = "debtor")
     private List<Debt> debts = new ArrayList<>();
 
-    private int[] contractsID;
+    @OneToMany(mappedBy = "debtor")
+    private List<Contract> contracts = new ArrayList<>();
 
     public User(String firstName, String lastName, String patronymic, Date birthDate, Gender gender,
                 Long passportSeries, Integer passportNumber, String passportIssued, Date dateOfIssue,
-                String departmentCode, String location, List<Debt> debtsId)
+                String departmentCode, String location, List<Debt> debts, List<Contract> contracts)
     {
         fullName = new FullName(firstName, lastName, patronymic);
         this.birthDate = birthDate;
         this.gender = gender;
         passportInfo = new PassportInfo(passportSeries, passportNumber, passportIssued, dateOfIssue, departmentCode,
                 location);
-        this.debts = debtsId;
-        // this.contractsID = contractsID;
+        this.debts = debts;
+        this.contracts = contracts;
     }
 
     public Long getId() {
@@ -84,6 +85,14 @@ public class User
 
     public void setDebts(List<Debt> debtsId) {
         this.debts = debtsId;
+    }
+
+    public List<Contract> getContracts() {
+        return contracts;
+    }
+
+    public void setContracts(List<Contract> contracts) {
+        this.contracts = contracts;
     }
 
     @Override

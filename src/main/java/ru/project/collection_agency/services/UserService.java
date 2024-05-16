@@ -1,6 +1,7 @@
 package ru.project.collection_agency.services;
 
 import org.springframework.stereotype.Service;
+import ru.project.collection_agency.entities.Contract;
 import ru.project.collection_agency.entities.Debt;
 import ru.project.collection_agency.entities.Gender;
 import ru.project.collection_agency.entities.User;
@@ -29,10 +30,10 @@ public class UserService
 
     public void addUser(String firstName, String lastName, String patronymic, Date birthDate, Gender gender,
                         Long passportSeries, Integer passportNumber, String passportIssued, Date dateOfIssue,
-                        String departmentCode, String location, List<Debt> debts)
+                        String departmentCode, String location, List<Debt> debts, List<Contract> contracts)
     {
         User newUser = new User(firstName, lastName, patronymic, birthDate, gender, passportSeries, passportNumber,
-                passportIssued, dateOfIssue, departmentCode, location, debts);
+                passportIssued, dateOfIssue, departmentCode, location, debts, contracts);
         repository.save(newUser);
     }
 }
