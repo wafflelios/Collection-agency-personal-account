@@ -13,12 +13,16 @@ public class Debt
     @ManyToOne
     private User debtor;
 
+    @OneToOne(mappedBy = "debt")
+    private Contract contract;
+
     private Double amount;
 
     private String creditor;
 
-    public Debt(User debtor, Double amount, String creditor)
+    public Debt(User debtor, Contract contract, Double amount, String creditor)
     {
+        this.contract = contract;
         this.debtor = debtor;
         this.amount = amount;
         this.creditor = creditor;
@@ -63,5 +67,13 @@ public class Debt
                 Величина долга (в руб.): %s\
                 Кредитор: %s\
                 """, id, debtor.getFullName(), amount, creditor);
+    }
+
+    public Contract getContract() {
+        return contract;
+    }
+
+    public void setContract(Contract contract) {
+        this.contract = contract;
     }
 }

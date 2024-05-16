@@ -28,6 +28,11 @@ public class UserService
         return result.stream().toList();
     }
 
+    public User getUserById(Long id)
+    {
+        return repository.findById(id).get();
+    }
+
     public void addUser(String firstName, String lastName, String patronymic, Date birthDate, Gender gender,
                         Long passportSeries, Integer passportNumber, String passportIssued, Date dateOfIssue,
                         String departmentCode, String location, List<Debt> debts, List<Contract> contracts)

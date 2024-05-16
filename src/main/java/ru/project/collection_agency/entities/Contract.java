@@ -15,30 +15,23 @@ public class Contract
     @ManyToOne
     private User contractor;
 
-    private Long debtId;
+    @OneToOne
+    private Debt debt;
 
     private Date date;
 
     private String conditions;
 
-    public Contract(Long id, User contractor, Long debtId, Date date, String conditions) {
+    public Contract(Long id, User contractor, Debt debt, Date date, String conditions) {
         this.id = id;
         this.contractor = contractor;
-        this.debtId = debtId;
+        this.debt = debt;
         this.date = date;
         this.conditions = conditions;
     }
 
     public Long getId() {
         return id;
-    }
-
-    public Long getDebtId() {
-        return debtId;
-    }
-
-    public void setDebtId(Long debtId) {
-        this.debtId = debtId;
     }
 
     public Date getDate() {
@@ -63,5 +56,13 @@ public class Contract
 
     public void setContractor(User contractor) {
         this.contractor = contractor;
+    }
+
+    public Debt getDebt() {
+        return debt;
+    }
+
+    public void setDebt(Debt debt) {
+        this.debt = debt;
     }
 }
