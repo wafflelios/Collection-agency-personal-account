@@ -24,21 +24,21 @@ public class User
     @Convert(converter = PassportInfoAttributeConverter.class)
     private PassportInfo passportInfo;
 
-    //@OneToMany(mappedBy = "debtorId", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Long> debtsId = new ArrayList<>();
+    @OneToMany(mappedBy = "debtor")
+    private List<Debt> debts = new ArrayList<>();
 
-    // private int[] contractsID;
+    private int[] contractsID;
 
     public User(String firstName, String lastName, String patronymic, Date birthDate, Gender gender,
                 Long passportSeries, Integer passportNumber, String passportIssued, Date dateOfIssue,
-                String departmentCode, String location, List<Long> debtsId)
+                String departmentCode, String location, List<Debt> debtsId)
     {
         fullName = new FullName(firstName, lastName, patronymic);
         this.birthDate = birthDate;
         this.gender = gender;
         passportInfo = new PassportInfo(passportSeries, passportNumber, passportIssued, dateOfIssue, departmentCode,
                 location);
-        this.debtsId = debtsId;
+        this.debts = debtsId;
         // this.contractsID = contractsID;
     }
 
@@ -78,12 +78,12 @@ public class User
         this.passportInfo = passportInfo;
     }
 
-    public List<Long> getDebts() {
-        return debtsId;
+    public List<Debt> getDebts() {
+        return debts;
     }
 
-    public void setDebts(List<Long> debtsId) {
-        this.debtsId = debtsId;
+    public void setDebts(List<Debt> debtsId) {
+        this.debts = debtsId;
     }
 
     @Override

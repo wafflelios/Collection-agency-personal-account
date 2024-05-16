@@ -3,22 +3,23 @@ package ru.project.collection_agency.entities;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "debts", schema="public")
 public class Debt
 {
     @Id
     @GeneratedValue
     private Long id;
 
-    //@ManyToOne(fetch = FetchType.LAZY)
-    private Long debtorId;
+    @ManyToOne
+    private User debtor;
 
     private Double amount;
 
     private String creditor;
 
-    public Debt(Long debtorId, Double amount, String creditor)
+    public Debt(User debtor, Double amount, String creditor)
     {
-        this.debtorId = debtorId;
+        this.debtor = debtor;
         this.amount = amount;
         this.creditor = creditor;
     }
@@ -27,14 +28,14 @@ public class Debt
         return id;
     }
 
-    public Long getDebtorId()
+    public User getDebtor()
     {
-        return debtorId;
+        return debtor;
     }
 
-    public void setDebtorId(Long debtorId)
+    public void setDebtorId(User debtor)
     {
-        this.debtorId = debtorId;
+        this.debtor = debtor;
     }
 
     public Double getAmount() {
@@ -58,9 +59,9 @@ public class Debt
     {
         return String.format("""
                 ID: %s\
-                ID дебитора: %s\
+                Дебитора: %s\
                 Величина долга (в руб.): %s\
                 Кредитор: %s\
-                """, id, debtorId, amount, creditor);
+                """, id, debtor.getFullName(), amount, creditor);
     }
 }
