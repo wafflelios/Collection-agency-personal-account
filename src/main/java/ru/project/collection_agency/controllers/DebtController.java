@@ -4,46 +4,137 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import ru.project.collection_agency.entities.Contract;
 import ru.project.collection_agency.entities.Debt;
+import ru.project.collection_agency.entities.Role;
+import ru.project.collection_agency.entities.User;
+import ru.project.collection_agency.services.ContractService;
 import ru.project.collection_agency.services.DebtService;
+import ru.project.collection_agency.services.UserService;
 
+import java.security.Principal;
+import java.util.Date;
 import java.util.List;
 
 @Controller
 public class DebtController {
 
     private final DebtService debtService;
+    private final UserService userService;
+    private final ContractService contractService;
 
     @Autowired
-    public DebtController(DebtService debtService) {
+    public DebtController(DebtService debtService, UserService userService, ContractService contractService) {
         this.debtService = debtService;
+        this.userService = userService;
+        this.contractService = contractService;
     }
     @GetMapping("/debts/all")
     @ResponseBody
-    public List<Debt> getDebts()
+    public String getDebts()
     {
-        return debtService.getAllDebts();
+        StringBuilder result = new StringBuilder();
+        List<Debt> debts = debtService.getAllDebts();
+        for (Debt debt : debts) {
+            result.append(debt.toString()).append("<br><br><br>");
+        }
+        return result.toString();
     }
 
-    @GetMapping("/debts/find_by/debt_id/{id}")
+    @GetMapping("/debts/{id}")
     @ResponseBody
-    public Debt getDebtById(@PathVariable Long id)
+    public String getDebtById(Principal currentUser, @PathVariable Long id)
     {
-        return debtService.getDebtById(id);
+        try
+        {
+            User user = userService.getUserByUsername(currentUser.getName());
+            if (user.getRoles().contains(Role.ADMIN))
+            {
+                return debtService.getDebtById(id).toString();
+            }
+            else
+            {
+                if (user.getDebts().contains(debtService.getDebtById(id))){
+                    return debtService.getDebtById(id).toString();
+                }
+                return "You don't have a debt with ID " + id;
+            }
+        }
+        catch (Exception e)
+        {
+            return "You don't have a debt with ID " + id;
+        }
     }
 
-    @GetMapping("/debts/find_by/user_id/{id}")
+    @GetMapping("/home/debts")
     @ResponseBody
-    public List<Debt> getDebtsByUserId(@PathVariable Long id)
+    public String getUserDebts(Principal currentUser)
     {
-        return debtService.getDebtsByUserId(id);
+        List<Debt> debts = debtService.getDebtsByUser(currentUser.getName());
+        StringBuilder result = new StringBuilder();
+        for (Debt debt : debts) {
+            result.append(debt.toString()).append("<br><br><br>");
+        }
+        return result.toString();
     }
 
-    @GetMapping("/debts/find_by/contract_id/{id}")
+    @GetMapping("/home/debts/repaid")
     @ResponseBody
-    public Debt getDebtByContractId(@PathVariable Long id)
+    public String getRepaidUserDebts(Principal currentUser)
     {
-        return debtService.getDebtsByContractId(id);
+        List<Debt> debts = debtService.getDebtsByUser(currentUser.getName());
+        StringBuilder result = new StringBuilder();
+        for (Debt debt : debts) {
+            if (debt.isRepaid()) result.append(debt.toString()).append("<br><br><br>");
+        }
+        return result.toString();
+    }
+
+    @GetMapping("/home/debts/not-repaid")
+    @ResponseBody
+    public String getNotRepaidUserDebts(Principal currentUser)
+    {
+        List<Debt> debts = debtService.getDebtsByUser(currentUser.getName());
+        StringBuilder result = new StringBuilder();
+        for (Debt debt : debts) {
+            if (!debt.isRepaid()) result.append(debt.toString()).append("<br><br><br>");
+        }
+        return result.toString();
+    }
+
+    @GetMapping("/debts/add")
+    public String addDebt()
+    {
+        return "addDebt";
+    }
+
+    @PostMapping("/debts/add")
+    public String addDebt(String debtorId, String amount, String creditor, String contractConditions)
+    {
+        User user = userService.getUserById(Long.parseLong(debtorId));
+        Debt debt = new Debt(user, null, Double.parseDouble(amount), creditor, false);
+        debtService.addDebt(debt);
+        Contract contract = new Contract(user, debt, new Date(), contractConditions);
+        contractService.addContract(contract);
+        debt.setContract(contract);
+        List<Debt> debts = user.getDebts();
+        List<Contract> contracts = user.getContracts();
+        debts.add(debt);
+        contracts.add(contract);
+        userService.updateUser(user);
+        debtService.addDebt(debt);
+        contractService.addContract(contract);
+        return "redirect:/users/all";
+    }
+
+    @GetMapping("/debts/{id}/repaid")
+    public String repaidDebt(@PathVariable Long id)
+    {
+        Debt debt = debtService.getDebtById(id);
+        debt.setRepaid(true);
+        debtService.addDebt(debt);
+        return "redirect:/debts/all";
     }
 }

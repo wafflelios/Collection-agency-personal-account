@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">\<head>
+    <title>Spring Security Example </title>
+</head>
+<body>
+<div th:if="${message}">
+    <div th:text="${message}"></div>
+</div>
+<form th:action="@{/edit-info}" method="post">
+    <div>ФИО:</div>
+    <div><label> Имя : <input type="text" name="firstname"/> </label></div>
+    <div><label> Фамилия : <input type="text" name="lastname"/> </label></div>
+    <div><label> Отчество : <input type="text" name="patronymic"/> </label></div>
+    <div></div>
+    <div><label> Дата рождения : <input type="date" name="birthDate"/> </label></div>
+    <div></div>
+    <div><label> Пол : <select name="gender" multiple>
+        <option value="Male">M</option>
+        <option value="Female">Ж</option>
+    </select></label></div>
+    <div></div>
+    <div>Паспортные данные:</div>
+    <div><label> Серия : <input type="text" name="series"/> </label></div>
+    <div><label> Номер : <input type="text" name="number"/> </label></div>
+    <div><label> Паспорт выдан : <input type="text" name="issued"/> </label></div>
+    <div><label> Код подразделения : <input type="text" name="departmentCode"/> </label></div>
+    <div><label> Дата выдачи : <input type="date" name="dateOfIssue"/> </label></div>
+    <div><label> Место рождения : <input type="text" name="location"/> </label></div>
+    <div><input type="submit" value="Сохранить данные"/></div>
+</form>
+</body>
+</html>

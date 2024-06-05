@@ -6,44 +6,72 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
 import ru.project.collection_agency.entities.Contract;
+import ru.project.collection_agency.entities.Role;
+import ru.project.collection_agency.entities.User;
 import ru.project.collection_agency.services.ContractService;
+import ru.project.collection_agency.services.UserService;
 
+import java.security.Principal;
 import java.util.List;
 
 @Controller
 public class ContractController {
 
     private final ContractService contractService;
+    private final UserService userService;
 
     @Autowired
-    public ContractController(ContractService contractService) {
+    public ContractController(ContractService contractService, UserService userService) {
         this.contractService = contractService;
+        this.userService = userService;
     }
+
     @GetMapping("/contracts/all")
     @ResponseBody
-    public List<Contract> getContracts()
+    public String getContracts()
     {
-        return contractService.getAllContracts();
+        StringBuilder result = new StringBuilder();
+        List<Contract> contracts = contractService.getAllContracts();
+        for (Contract contract : contracts) {
+            result.append(contract.toString()).append("<br><br><br>");
+        }
+        return result.toString();
     }
 
-    @GetMapping("/contracts/find_by/contract_id/{id}")
+    @GetMapping("/contracts/{id}")
     @ResponseBody
-    public Contract getContractById(@PathVariable Long id)
+    public String getContractById(Principal currentUser, @PathVariable Long id)
     {
-        return contractService.getContractById(id);
+        try
+        {
+            User user = userService.getUserByUsername(currentUser.getName());
+            if (user.getRoles().contains(Role.ADMIN))
+            {
+                return contractService.getContractById(id).toString();
+            }
+            else
+            {
+                if (user.getContracts().contains(contractService.getContractById(id))) {
+                    return contractService.getContractById(id).toString();
+                }
+                else return "You don't have a contract with ID " + id;
+            }
+        }
+        catch (Exception e)
+        {
+            return "You don't have a contract with ID " + id;
+        }
     }
 
-    @GetMapping("/contracts/find_by/user_id/{id}")
+    @GetMapping("/home/contracts")
     @ResponseBody
-    public List<Contract> getContractByUserId(@PathVariable Long id)
+    public String getUserContracts(Principal currentUser)
     {
-        return contractService.getContractByUserId(id);
-    }
-
-    @GetMapping("/contracts/find_by/debt_id/{id}")
-    @ResponseBody
-    public Contract getContractByDebtId(@PathVariable Long id)
-    {
-        return contractService.getContractsByDebtId(id);
+        List<Contract> contracts = contractService.getContractsByUser(currentUser.getName());
+        StringBuilder result = new StringBuilder();
+        for (Contract contract : contracts) {
+            result.append(contract.toString()).append("<br><br><br>");
+        }
+        return result.toString();
     }
 }

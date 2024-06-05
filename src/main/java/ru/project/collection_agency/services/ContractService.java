@@ -42,4 +42,15 @@ public class ContractService {
         repository.findAll().forEach(result::add);
         return result.stream().filter( contract -> contract.getDebt().getId().equals(id)).toList().get(0);
     }
+
+    public void addContract(Contract contract)
+    {
+        repository.save(contract);
+    }
+
+    public List<Contract> getContractsByUser (String username) {
+        List<Contract> result = new ArrayList<>();
+        repository.findAll().forEach(result::add);
+        return result.stream().filter(contract -> contract.getContractor().getUsername().equals(username)).toList();
+    }
 }

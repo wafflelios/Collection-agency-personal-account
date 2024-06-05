@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">\<head>
+    <title>Spring Security Example </title>
+</head>
+<body>
+<div th:if="${message}">
+    <div th:text="${message}"></div>
+</div>
+<form th:action="@{/debts/add}" method="post">
+    <div><label> Debtor ID : <input type="text" name="debtorId"/> </label></div>
+    <div><label> Amount : <input type="text" name="amount"/> </label></div>
+    <div><label> Creditor : <input type="text" name="creditor"/> </label></div>
+    <div><label> Contract Conditions : <input type="text" name="contractConditions"/> </label></div>
+    <div><input type="submit" value="Добавить долг"/></div>
+</form>
+</body>
+</html>

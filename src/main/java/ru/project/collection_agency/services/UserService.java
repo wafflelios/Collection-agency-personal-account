@@ -1,21 +1,26 @@
 package ru.project.collection_agency.services;
 
-import org.springframework.stereotype.Service;
-import ru.project.collection_agency.entities.Contract;
-import ru.project.collection_agency.entities.Debt;
-import ru.project.collection_agency.entities.Gender;
-import ru.project.collection_agency.entities.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Component;
+import ru.project.collection_agency.entities.*;
 import ru.project.collection_agency.repositories.UserRepository;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.stream.Collectors;
 
-@Service
-public class UserService
+@Component
+public class UserService implements UserDetailsService
 {
     protected final UserRepository repository;
 
+    @Autowired
     public UserService(UserRepository userRepository)
     {
         repository = userRepository;
@@ -28,17 +33,66 @@ public class UserService
         return result.stream().toList();
     }
 
+    public User getUserByUsername(String username)
+    {
+        return repository.findByUsername(username);
+    }
+
     public User getUserById(Long id)
     {
         return repository.findById(id).get();
     }
 
-    public void addUser(String firstName, String lastName, String patronymic, Date birthDate, Gender gender,
-                        Long passportSeries, Integer passportNumber, String passportIssued, Date dateOfIssue,
-                        String departmentCode, String location, List<Debt> debts, List<Contract> contracts)
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException
     {
-        User newUser = new User(firstName, lastName, patronymic, birthDate, gender, passportSeries, passportNumber,
-                passportIssued, dateOfIssue, departmentCode, location, debts, contracts);
-        repository.save(newUser);
+        User myUser = repository.findByUsername(username);
+        return new org.springframework.security.core.userdetails.User(myUser.getUsername(), myUser.getPassword(),
+                mapRolesToAthorities(myUser.getRoles()));
     }
+
+
+    private List<? extends GrantedAuthority> mapRolesToAthorities(Set<Role> roles)
+    {
+        return roles.stream().map(r -> new SimpleGrantedAuthority("ROLE_" + r.name())).collect(Collectors.toList());
+    }
+
+
+    public void addUser(User user) throws Exception
+    {
+        User userFromDb = repository.findByUsername(user.getUsername());
+        if (userFromDb != null)
+        {
+            throw new Exception("user exist");
+        }
+        user.setRoles(Collections.singleton(Role.USER));
+        user.setActive(true);
+        repository.save(user);
+    }
+
+    public void updateUser(User user)
+    {
+        repository.save(user);
+    }
+
+    public Date StringToDate(String strDate)
+    {
+        SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
+        Date result = new Date();
+        try
+        {
+            result = sf.parse(strDate);
+        }
+        catch (ParseException exception)
+        {
+            exception.printStackTrace();
+        }
+        return result;
+    }
+
+    public User getUserByEmail(String email)
+    {
+        return repository.findByEmail(email);
+    }
+
 }

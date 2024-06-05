@@ -42,4 +42,15 @@ public class DebtService {
         repository.findAll().forEach(result::add);
         return result.stream().filter( debt -> debt.getContract().getId().equals(id)).toList().get(0);
     }
+
+    public void addDebt(Debt debt)
+    {
+        repository.save(debt);
+    }
+
+    public List<Debt> getDebtsByUser (String username) {
+        List<Debt> result = new ArrayList<>();
+        repository.findAll().forEach(result::add);
+        return result.stream().filter(debt -> debt.getDebtor().getUsername().equals(username)).toList();
+    }
 }

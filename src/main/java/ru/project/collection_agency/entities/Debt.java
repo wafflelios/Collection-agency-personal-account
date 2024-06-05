@@ -20,12 +20,32 @@ public class Debt
 
     private String creditor;
 
-    public Debt(User debtor, Contract contract, Double amount, String creditor)
+    private boolean repaid;
+
+    public Debt()
     {
-        this.contract = contract;
+
+    }
+
+    public Debt(User debtor, Contract contract, Double amount, String creditor, boolean repaid)
+    {
         this.debtor = debtor;
+        this.contract = contract;
         this.amount = amount;
         this.creditor = creditor;
+        this.repaid = repaid;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "ID: " + id + "<br>" +
+                "ID дебитора: " + debtor.getId() + "<br>" +
+                "ФИО дебитора: " + debtor.getFirstName() + " " + debtor.getLastName() + " " + debtor.getPatronymic() + "<br>" +
+                "ID договора: " + contract.getId() + "<br>" +
+                "Сумма долга: " + amount + "<br>" +
+                "Кредитор: " + creditor + "<br>" +
+                "Погашен: " + repaid;
     }
 
     public Long getId() {
@@ -58,22 +78,19 @@ public class Debt
         this.creditor = creditor;
     }
 
-    @Override
-    public String toString()
-    {
-        return String.format("""
-                ID: %s\
-                Дебитора: %s\
-                Величина долга (в руб.): %s\
-                Кредитор: %s\
-                """, id, debtor.getFullName(), amount, creditor);
-    }
-
     public Contract getContract() {
         return contract;
     }
 
     public void setContract(Contract contract) {
         this.contract = contract;
+    }
+
+    public boolean isRepaid() {
+        return repaid;
+    }
+
+    public void setRepaid(boolean repaid) {
+        this.repaid = repaid;
     }
 }
