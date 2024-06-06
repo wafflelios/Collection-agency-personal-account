@@ -36,16 +36,25 @@ public class RegistrationController
     @PostMapping("/registration")
     public String adduser(Model model, User user, String code)
     {
-        User dbUser = userService.getUserByEmail(user.getEmail());
-        if (dbUser == null)
+        User emailUser = userService.getUserByEmail(user.getEmail());
+        User usernameUser = userService.getUserByUsername(user.getUsername());
+        if (emailUser == null && usernameUser == null)
         {
             verificationCode = emailService.generateVerificationCode();
             this.user = user;
             emailService.sendMessage(user.getEmail(), "Ваш код подтверждения:", verificationCode);
             return "redirect:/email-verification";
         }
-        model.addAttribute("message", "User with this email already exists");
-        return "registration";
+        else if (usernameUser != null)
+        {
+            model.addAttribute("message", "User with this username already exists");
+            return "registration";
+        }
+        else
+        {
+            model.addAttribute("message", "User with this email already exists");
+            return "registration";
+        }
     }
 
     @GetMapping("/email-verification")

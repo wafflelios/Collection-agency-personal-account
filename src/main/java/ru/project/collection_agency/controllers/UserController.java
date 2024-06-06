@@ -105,4 +105,10 @@ public class UserController
             return "becomeAdmin";
         }
     }
+
+    @GetMapping(value = "/hello-world")
+    @ResponseBody
+    public String helloWorld() {
+        return "hello world";
+    }
 }

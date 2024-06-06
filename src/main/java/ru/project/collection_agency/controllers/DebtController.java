@@ -111,9 +111,9 @@ public class DebtController {
     }
 
     @PostMapping("/debts/add")
-    public String addDebt(String debtorId, String amount, String creditor, String contractConditions)
+    public String addDebt(String debtorUsername, String amount, String creditor, String contractConditions)
     {
-        User user = userService.getUserById(Long.parseLong(debtorId));
+        User user = userService.getUserByUsername(debtorUsername);
         Debt debt = new Debt(user, null, Double.parseDouble(amount), creditor, false);
         debtService.addDebt(debt);
         Contract contract = new Contract(user, debt, new Date(), contractConditions);
